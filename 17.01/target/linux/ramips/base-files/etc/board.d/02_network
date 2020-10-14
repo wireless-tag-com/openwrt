@@ -1,0 +1,35 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/ramips.sh
+. /lib/functions/uci-defaults.sh
+. /lib/functions/system.sh
+. /lib/functions/wtinfo.sh
+
+ramips_setup_interfaces()
+{
+	local board="$1"
+	local lan_mac="$(wtinfo_get_mac)"
+	local wan_mac="$(wtinfo_get_wan_mac)"
+
+	case "$board" in
+	"WT7628"*)
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
+		;;
+	"WT7621"*)
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6@eth0"
+		;;
+	esac
+
+	ucidef_set_interface_macaddr "lan" "$lan_mac"
+	ucidef_set_interface_macaddr "wan" "$wan_mac"
+}
+
+board_config_update
+board=$(ramips_board_name)
+ramips_setup_interfaces $board
+board_config_flush
+
+exit 0

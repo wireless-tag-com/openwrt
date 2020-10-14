@@ -1,0 +1,23 @@
+CONFIG_HAVE_DOT_CONFIG=y
+# CONFIG_TARGET_ar71xx is not set
+# CONFIG_TARGET_mediatek is not set
+CONFIG_TARGET_ramips=y
+# CONFIG_TARGET_layerscape is not set
+# CONFIG_TARGET_ipq806x is not set
+# CONFIG_TARGET_x86 is not set
+# CONFIG_TARGET_ramips_rt305x is not set
+# CONFIG_TARGET_ramips_mt7620 is not set
+# CONFIG_TARGET_ramips_mt7621 is not set
+CONFIG_TARGET_ramips_mt7628=y
+# CONFIG_TARGET_ramips_mt7688 is not set
+# CONFIG_TARGET_ramips_rt3883 is not set
+# CONFIG_TARGET_ramips_rt288x is not set
+# CONFIG_TARGET_MULTI_PROFILE is not set
+# CONFIG_TARGET_ramips_mt7628_Default is not set
+CONFIG_TARGET_ramips_mt7628_DEVICE_WT7628=y
+
+CONFIG_PACKAGE_uboot-mtk-WT7628=y
+
+wtinclude wt_base
+wtinclude wt_mt76
+

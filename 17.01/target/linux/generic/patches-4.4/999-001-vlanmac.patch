@@ -1,0 +1,30 @@
+--- a/net/8021q/vlan.c
++++ b/net/8021q/vlan.c
+@@ -210,6 +210,7 @@
+ 	struct net *net = dev_net(real_dev);
+ 	struct vlan_net *vn = net_generic(net, vlan_net_id);
+ 	char name[IFNAMSIZ];
++	int t;
+ 	int err;
+ 
+ 	if (vlan_id >= VLAN_VID_MASK)
+@@ -257,6 +258,19 @@
+ 	 */
+ 	new_dev->mtu = real_dev->mtu;
+ 	new_dev->priv_flags |= (real_dev->priv_flags & IFF_UNICAST_FLT);
++
++	/*
++	 * setup dev addr based on vid and real dev addr
++	 */
++	t = (((u32) real_dev->dev_addr[3]) << 16) + (((u32) real_dev->dev_addr[4]) << 8) + ((u32) real_dev->dev_addr[5]);
++	t += (vlan_id - 1);
++
++	new_dev->dev_addr[0] = real_dev->dev_addr[0];
++	new_dev->dev_addr[1] = real_dev->dev_addr[1];
++	new_dev->dev_addr[2] = real_dev->dev_addr[2];
++	new_dev->dev_addr[3] = (t >> 16) & 0xff;
++	new_dev->dev_addr[4] = (t >> 8) & 0xff;
++	new_dev->dev_addr[5] = t & 0xff;
+ 
+ 	vlan = vlan_dev_priv(new_dev);
+ 	vlan->vlan_proto = htons(ETH_P_8021Q);

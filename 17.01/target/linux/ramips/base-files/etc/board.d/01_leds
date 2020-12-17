@@ -3,10 +3,6 @@
 . /lib/functions/uci-defaults.sh
 . /lib/ramips.sh
 
-set_usb_led() {
-	ucidef_set_led_usbdev "usb" "USB" "${1}" "${2:-1-1}"
-}
-
 set_wifi_led() {
 	ucidef_set_led_netdev "wifi_led" "wifi" "${1}" "${2:-wlan0}"
 }
@@ -18,7 +14,7 @@ board_config_update
 
 case $board in
 WT*)
-	set_wifi_led "wt:wifi" "ra0"
+	set_wifi_led "led:wifi" "wlan0"
 	;;
 esac
 

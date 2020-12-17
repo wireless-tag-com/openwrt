@@ -1,0 +1,22 @@
+--- a/drivers/mmc/host/mtk-mmc/sd.c
++++ b/drivers/mmc/host/mtk-mmc/sd.c
+@@ -3003,7 +3003,7 @@
+ {
+     int ret;
+ /* +++ by chhung */
+-    u32 reg;
++    u32 reg, reg1;
+ 
+ #if defined (CONFIG_MTD_ANY_RALINK)
+     extern int ra_check_flash_type(void);
+@@ -3029,6 +3029,10 @@
+     sdr_write32((volatile u32*)(RALINK_SYSCTL_BASE + 0x3c), reg);
+ 
+     reg = sdr_read32((volatile u32*)(RALINK_SYSCTL_BASE + 0x60)) & ~(0x3<<10);
++    reg1 = sdr_read32((volatile u32*)(RALINK_SYSCTL_BASE + 0x1350)) | (0x1<<26);
++    sdr_write32((volatile u32*)(RALINK_SYSCTL_BASE + 0x1350), reg1);
++    reg1 = sdr_read32((volatile u32*)(RALINK_SYSCTL_BASE + 0x1360)) & ~(0x1<<26);
++    sdr_write32((volatile u32*)(RALINK_SYSCTL_BASE + 0x1360), reg1);
+ #if defined (CONFIG_MTK_MMC_EMMC_8BIT)
+     reg |= 0x3<<26 | 0x3<<28 | 0x3<<30;
+     msdc0_hw.data_pins      = 8,

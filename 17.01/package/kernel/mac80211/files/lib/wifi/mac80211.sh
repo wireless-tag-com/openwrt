@@ -58,23 +58,7 @@ check_mac80211_device() {
 	[ "$phy" = "$dev" ] && found=1
 }
 
-mac80211_macaddr_add() {
-	local mac=$1
-	local val=$2
-	local oui=${mac%:*:*:*}
-	local nic=${mac#*:*:*:}
-
-	nic=$(printf "%06x" $((0x${nic//:/} + $val & 0xffffff)) | sed 's/^\(.\{2\}\)\(.\{2\}\)\(.\{2\}\)/\1:\2:\3/')
-	echo $oui:$nic
-}
-
 detect_mac80211() {
-	. /lib/functions/wtinfo.sh
-	
-	base_mac_addr=$(wtinfo_get_mac)
-	mac_suffix=$(echo $base_mac_addr | sed 's/://g')
-	ssid_suffix=${mac_suffix:8:4}
-
 	devidx=0
 	config_load wireless
 	while :; do
@@ -125,25 +109,20 @@ detect_mac80211() {
 			dev_id="set wireless.radio${devidx}.macaddr=$(cat /sys/class/ieee80211/${dev}/macaddress)"
 		fi
 
-		mac_addr=$(mac80211_macaddr_add "$base_mac_addr" $devidx)
-		dev_mac="set wireless.radio${devidx}.macaddr=$mac_addr"
-
 		uci -q batch <<-EOF
 			set wireless.radio${devidx}=wifi-device
 			set wireless.radio${devidx}.type=mac80211
 			set wireless.radio${devidx}.channel=${channel}
 			set wireless.radio${devidx}.hwmode=11${mode_band}
 			${dev_id}
-			${dev_mac}
 			${ht_capab}
 			set wireless.radio${devidx}.disabled=0
 
 			set wireless.default_radio${devidx}=wifi-iface
 			set wireless.default_radio${devidx}.device=radio${devidx}
-			set wireless.default_radio${devidx}.macaddr=${mac_addr}
 			set wireless.default_radio${devidx}.network=lan
 			set wireless.default_radio${devidx}.mode=ap
-			set wireless.default_radio${devidx}.ssid=WT-${ssid_suffix}
+			set wireless.default_radio${devidx}.ssid=WT-LEDE
 			set wireless.default_radio${devidx}.encryption=none
 EOF
 		uci -q commit wireless

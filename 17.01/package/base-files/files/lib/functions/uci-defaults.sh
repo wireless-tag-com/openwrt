@@ -639,6 +639,38 @@ ucidef_set_ntpserver() {
 	json_select ..
 }
 
+ucidef_set_interface_lte() {
+	local ifname=$1
+	local index=$2
+	local proto=$3
+
+	uci -q get network.lte$index && return 0
+
+	uci batch <<EOF
+set network.lte$index='interface'
+set network.lte$index.ifname='$ifname'
+set network.lte$index.def_ifname='$ifname'
+set network.lte$index.proto='$proto'
+EOF
+
+}
+
+ucidef_set_interface_ltev6() {
+	local ifname=$1
+	local index=$2
+	local proto=$3
+
+	uci -q get network.lte$index6 && return 0
+
+	uci batch <<EOF
+set network.lte${index}6='interface'
+set network.lte${index}6.ifname='$ifname'
+set network.lte${index}6.def_ifname='$ifname'
+set network.lte${index}6.proto='$proto'
+EOF
+
+}
+
 board_config_update() {
 	json_init
 	[ -f ${CFG} ] && json_load "$(cat ${CFG})"

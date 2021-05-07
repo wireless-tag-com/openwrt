@@ -1,0 +1,78 @@
+#!/bin/sh
+
+if [ "$ACTION" = "add" ]; then
+	cpu_name=$(awk 'BEGIN{FS="[ \t]+:[ \t]"} /system type/ {print $2}' /proc/cpuinfo)
+
+	case "$cpu_name" in
+	*"MT7621"*)
+		case "$INTERFACE" in
+		"eth0")
+			echo 5 >/sys/class/net/eth0/queues/rx-0/rps_cpus
+			echo 5 >/sys/class/net/eth1/queues/rx-0/rps_cpus
+			ethernet_irq=`grep eth0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			usb_irq=`grep xhci /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 2 >/proc/irq/$ethernet_irq/smp_affinity
+			echo 4 >/proc/irq/$usb_irq/smp_affinity
+			echo 3 >/sys/class/net/usb0/queues/rx-0/rps_cpus
+			;;
+		"eth1")
+			echo 5 >/sys/class/net/eth0/queues/rx-0/rps_cpus
+			echo 5 >/sys/class/net/eth1/queues/rx-0/rps_cpus
+			ethernet_irq=`grep eth0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			usb_irq=`grep xhci /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 2 >/proc/irq/$ethernet_irq/smp_affinity
+			echo 4 >/proc/irq/$usb_irq/smp_affinity
+			echo 3 >/sys/class/net/usb0/queues/rx-0/rps_cpus
+			;;
+		"eth0.1")
+			echo 5 >/sys/class/net/eth0/queues/rx-0/rps_cpus
+			ethernet_irq=`grep ethernet /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			usb_irq=`grep xhci /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 2 >/proc/irq/$ethernet_irq/smp_affinity
+			echo 4 >/proc/irq/$usb_irq/smp_affinity
+			echo 5 >/sys/class/net/$INTERFACE/queues/rx-0/rps_cpus
+			echo 3 >/sys/class/net/usb0/queues/rx-0/rps_cpus
+			;;
+		"eth0.2")
+			echo 5 >/sys/class/net/eth0/queues/rx-0/rps_cpus
+			echo 5 >/sys/class/net/$INTERFACE/queues/rx-0/rps_cpus
+			;;
+		"ra0")
+			echo 3 >/sys/class/net/ra0/queues/rx-0/rps_cpus
+			echo 3 >/sys/class/net/apcli0/queues/rx-0/rps_cpus
+			pcie0_irq=`grep 0000:01:00.0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			pcie1_irq=`grep 0000:02:00.0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 8 >/proc/irq/$pcie0_irq/smp_affinity
+			echo 4 >/proc/irq/$pcie1_irq/smp_affinity
+			;;
+		"rai0")
+			echo 3 >/sys/class/net/rai0/queues/rx-0/rps_cpus
+			echo 3 >/sys/class/net/apclii0/queues/rx-0/rps_cpus
+			pcie0_irq=`grep 0000:01:00.0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			pcie1_irq=`grep 0000:02:00.0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 8 >/proc/irq/$pcie0_irq/smp_affinity
+			echo 4 >/proc/irq/$pcie1_irq/smp_affinity
+			;;
+		"rax0")
+			echo 3 >/sys/class/net/rax0/queues/rx-0/rps_cpus
+			echo 3 >/sys/class/net/apclix0/queues/rx-0/rps_cpus
+			pcie0_irq=`grep 0000:01:00.0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			pcie1_irq=`grep 0000:02:00.0 /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 8 >/proc/irq/$pcie0_irq/smp_affinity
+			echo 4 >/proc/irq/$pcie1_irq/smp_affinity
+			;;
+		"usb"*)
+			echo 3 >/sys/class/net/$INTERFACE/queues/rx-0/rps_cpus
+			usb_irq=`grep xhci /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 4 >/proc/irq/$usb_irq/smp_affinity
+			;;
+		"wwan"*)
+			echo 3 >/sys/class/net/$INTERFACE/queues/rx-0/rps_cpus
+			usb_irq=`grep xhci /proc/interrupts | cut -d ':' -f 1 | tr -d ' '`
+			echo 4 >/proc/irq/$usb_irq/smp_affinity
+			;;
+		esac
+		;;
+	esac
+fi
+

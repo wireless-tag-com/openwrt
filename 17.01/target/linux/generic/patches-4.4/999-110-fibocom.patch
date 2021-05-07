@@ -1,0 +1,63 @@
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -555,6 +555,11 @@
+ #define WETELECOM_PRODUCT_6802			0x6802
+ #define WETELECOM_PRODUCT_WMD300		0x6803
+ 
++/* FIBOCOM */
++#define FIBOCOM_VENDOR_ID   0x2CB7
++#define FIBOCOM_PRODUCT_FG650_ECM 0x0A04
++#define FIBOCOM_PRODUCT_FG650_NCM 0x0A05
++#define FIBOCOM_PRODUCT_FG650_RNDIS 0x0A06
+ 
+ /* Device flags */
+ 
+@@ -566,6 +571,17 @@
+ 
+ 
+ static const struct usb_device_id option_ids[] = {
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x0104) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x0105) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x0107) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x0108) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x0109) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x010A) }, 
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x0110) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, 0x0111) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, FIBOCOM_PRODUCT_FG650_ECM), .driver_info = RSVD(0) | RSVD(1) | RSVD(5) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, FIBOCOM_PRODUCT_FG650_NCM), .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
++  { USB_DEVICE(FIBOCOM_VENDOR_ID, FIBOCOM_PRODUCT_FG650_RNDIS), .driver_info = RSVD(0) | RSVD(1) | RSVD(6) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
+@@ -2053,6 +2069,30 @@
+ 	    iface_desc->bInterfaceClass != USB_CLASS_CDC_DATA)
+ 		return -ENODEV;
+ 
++  if(serial->dev->descriptor.idVendor == FIBOCOM_VENDOR_ID &&
++    (((serial->dev->descriptor.idProduct == cpu_to_le16(0x0104) ||
++    serial->dev->descriptor.idProduct == cpu_to_le16(0x0105)) &&
++    serial->interface->cur_altsetting->desc.bInterfaceNumber >= 4)||
++    ((serial->dev->descriptor.idProduct == cpu_to_le16(0x0109) ||
++    serial->dev->descriptor.idProduct == cpu_to_le16(0x010A)) &&
++    serial->interface->cur_altsetting->desc.bInterfaceNumber >= 2)))
++  {
++    printk(KERN_INFO "Discovery the interface for FIBOCOM .");
++    return -ENODEV;
++  }
++
++  if(serial->dev->descriptor.idVendor == FIBOCOM_VENDOR_ID &&
++    (((serial->dev->descriptor.idProduct == cpu_to_le16(0x0104) ||
++    serial->dev->descriptor.idProduct == cpu_to_le16(0x0105)) &&
++    serial->interface->cur_altsetting->desc.bInterfaceNumber >= 4)||
++    ((serial->dev->descriptor.idProduct == cpu_to_le16(0x0109) ||
++    serial->dev->descriptor.idProduct == cpu_to_le16(0x010A)) &&
++    serial->interface->cur_altsetting->desc.bInterfaceNumber >= 2)))
++  {
++    printk(KERN_INFO "Discovery the interface for FIBOCOM .");
++    return -ENODEV;
++  }
++
+ 	/* Store the device flags so we can use them during attach. */
+ 	usb_set_serial_data(serial, (void *)device_flags);
+ 

@@ -39,5 +39,8 @@ wireless-tag openwrt
   * For WT7628<br>
   	`make WT7628_wt`
 
+  * For WT7621<br>
+  	`make WT7621_wt`
+
 + build
   `make V=s -j4`
